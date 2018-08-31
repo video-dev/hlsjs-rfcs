@@ -6,8 +6,7 @@
 # Summary
 [summary]: #summary
 
-Low-latency HLS manifests advertise segments before the server transcodes them. If the LHLS-enabling metadata flag is present in the master manifest, Hls.js will initiate HTTP requests against each segment in a child rendition using chunked transfer encoding.
-
+Low-latency transcoding pipelines advertise segments in their manifest before that segment is actually transcoded. Using chunked transfer encoding, Hls.js will open an HTTP connection to each segment within the manifest. The transcoder will push partial segments as they're being processed down this connection; when received, Hls.js pushes and each partial segment through the progressive streaming engine so that it may be immediately buffered.
 # Motivation
 [motivation]: #motivation
 
@@ -17,8 +16,8 @@ During a live stream, current transcoders wait until several segments are finish
 
 Low-latency transcoders want an HLS client which takes advantage of early segment advertising. Hls.js, being the most widely used web HLS client, is in a position to enable all developers access to a FOSS LHLS client.
 
-# High-Level Explanation
-[high-level-explanation]: #high-level-explanation
+# Guide-Level Explanation
+[Guide-level-explanation]: #guide-level-explanation
 
 A low-latency manifest is signaled via metadata in the master manifest. When Hls.js encounters this tag, it enters low-latency mode. In low latency mode, Hls.js instructs it's fragment loader to initiate a connection to each segment in the manifest. Throughout the live stream Hls.js continuously re-downloads the manifest and initiates connections against any new segments. Hls.js uses the Fetch API with a streaming body response; each segment download is received as multiple smaller chunks.
 
@@ -78,6 +77,5 @@ If there is no prior art, that is fine - your ideas are interesting to us whethe
 # Unresolved questions
 [unresolved-questions]: #unresolved-questions
 
-- What parts of the design do you expect to resolve through the RFC process before this gets merged?
-- What parts of the design do you expect to resolve through the implementation of this feature before stabilization?
-- What related issues do you consider out of scope for this RFC that could be addressed in the future independently of the solution that comes out of this RFC?
+- What to do when encountering an HTTP error?
+- Should a connection ever time out? If so, how long is this timeout? 

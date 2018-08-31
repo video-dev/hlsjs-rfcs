@@ -16,7 +16,7 @@ The introduction of a progressive streaming pipeline in Hls.js would reduce late
 A progressive streaming engine would enable Hls.js to play low-latency HLS streams. This RFC is a component of the LHLS RFC, please see {LINK} for more details.
 
 
-# guide-Level Explanation
+# Guide-Level Explanation
 [guide-level-explanation]: #guide-level-explanation
 
 The advanced segment download {link} will provide the progressive streaming pipeline with chunks of segments. Hls.js passes each chunk to the demuxer, which scans the partial segment for complete .ts packets (at 188-byte intervals). The demuxer parses through each .ts packet and extracts metadata and samples; when finished, if samples were found, they are passed to the remuxer. Partial packets (< 188 bytes) are saved for the next iteration. This process continues until the segment download completes at which point the demuxer will flush. The remuxer takes each set of samples and boxes them into fragmented MP4s. Each .fmp4 fragment is then appended to an MSE sourcebuffer.
